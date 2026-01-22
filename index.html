@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link href="https://fonts.googleapis.com" rel="stylesheet" />
+
+    <title>Pomodoro Widget</title>
+
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        font-family: "Poppins", sans-serif;
+      }
+
+      .widget {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 24px;
+
+        background-image: url("assets/red.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        box-shadow: none; /* important */
+        overflow: hidden;
+      }
+
+      .bow {
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 180px;
+        pointer-events: none;
+      }
+
+      .cat {
+        position: absolute;
+        bottom: 1px;
+        right: 10px;
+        width: 180px;
+        pointer-events: none;
+      }
+
+      .timer {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-family: "Pacifico", cursive;
+        transform: translate(-50%, -50%);
+        font-size: 48px;
+        font-weight: bold;
+        color: whitesmoke;
+      }
+
+      .controls {
+        position: absolute;
+        left: 20px;
+        bottom: 20px;
+        display: flex;
+        gap: 10px;
+      }
+
+      button {
+        background: rgba(255, 255, 255, 0.75);
+        border: none;
+        border-radius: 12px;
+        padding: 6px 12px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: rgba(255, 255, 255, 0.9);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="widget">
+      <img src="assets/bow.png" class="bow" />
+      <img src="assets/cat2.png" class="cat" />
+
+      <div class="timer" id="timer">25:00</div>
+
+      <div class="controls">
+        <button id="start">▶</button>
+        <button id="break">Break</button>
+      </div>
+    </div>
+
+    <script>
+      let focusTime = 25 * 60;
+      let breakTime = 5 * 60;
+
+      let timeLeft = focusTime;
+      let isRunning = false;
+      let isBreak = false;
+      let interval = null;
+
+      const timer = document.getElementById("timer");
+      const startBtn = document.getElementById("start");
+      const breakBtn = document.getElementById("break");
+
+      function format(sec) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+      }
+
+      function update() {
+        timer.textContent = format(timeLeft);
+      }
+
+      function tick() {
+        if (timeLeft > 0) {
+          timeLeft--;
+          update();
+        } else {
+          isBreak = !isBreak;
+          timeLeft = isBreak ? breakTime : focusTime;
+          update();
+        }
+      }
+
+      startBtn.onclick = () => {
+        if (!isRunning) {
+          interval = setInterval(tick, 1000);
+          startBtn.textContent = "⏸";
+        } else {
+          clearInterval(interval);
+          startBtn.textContent = "▶";
+        }
+        isRunning = !isRunning;
+      };
+
+      breakBtn.onclick = () => {
+        clearInterval(interval);
+        isRunning = false;
+        isBreak = true;
+        timeLeft = breakTime;
+        update();
+        startBtn.textContent = "▶";
+      };
+
+      update();
+    </script>
+  </body>
+</html>
